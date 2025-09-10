@@ -17,10 +17,17 @@
                 {% csrf_token %}
                 <input name="search_product" type="search" class="form-control" placeholder="Поиск..." aria-label="Search">
             </form>
+            {% if user.is_authenticated %}
             <div class="text-end">
-                <button type="button" class="btn btn-primary me-2">Login</button>
-                <button type="button" class="btn btn-warning">Sign-up</button>
+              <a href="/logout"><button type="button" class="btn btn-primary me-2">Выйти</button></a>
+              <a href="/cart"><button type="button" class="btn btn-primary">Корзина</button></a>
             </div>
+            {% else %}
+            <div class="text-end">
+              <a href="/register"><button type="button" class="btn btn-warning me-2">Регистрация</button></a>
+              <a href="{% url 'login' %}"><button type="button" class="btn btn-primary">Войти</button></a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </header>
@@ -35,10 +42,21 @@
             <p class="lead">{{ product.product_des }}</p>
             <p class="lead">Кол-во на складе: {{ product.product_count }}</p>
             <p class="lead">Категория: <a href="/category/{{ product.product_category.id }}">{{ product.product_category }}</a></p>
+            {% if user.is_authenticated %}
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Купить</button>
+                <form action="/add-to-cart/{{ product.id }}" method="post">
+                    {% csrf_token %}
+                    <input class="form-control w-25 mb-1" type="number" min="1" value="1" required name="pr_amount">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 me-md-2">Добавить в корзину</button>
+                    <button type="button" class="btn btn-outline-secondary btn-lg px-4">${{ product.product_price }}</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Войдите или зарегистрируйтесь для покупки!</button>
                 <button type="button" class="btn btn-outline-secondary btn-lg px-4">${{ product.product_price }}</button>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>

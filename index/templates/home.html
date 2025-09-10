@@ -17,10 +17,17 @@
                 {% csrf_token %}
                 <input name="search_product" type="search" class="form-control" placeholder="Поиск..." aria-label="Search">
             </form>
+            {% if user.is_authenticated %}
             <div class="text-end">
-                <button type="button" class="btn btn-primary me-2">Login</button>
-                <button type="button" class="btn btn-warning">Sign-up</button>
+              <a href="/logout"><button type="button" class="btn btn-primary me-2">Выйти</button></a>
+              <a href="/cart"><button type="button" class="btn btn-primary">Корзина</button></a>
             </div>
+            {% else %}
+            <div class="text-end">
+              <a href="/register"><button type="button" class="btn btn-warning me-2">Регистрация</button></a>
+              <a href="{% url 'login' %}"><button type="button" class="btn btn-primary">Войти</button></a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </header>

@@ -84,3 +84,29 @@ class Register(View):
             user.save()
             login(request, user)
             return redirect('/')
+
+
+# Выход из аккаунта
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
+
+# Добавление товара в корзину
+def add_to_cart(request, pk):
+    if request.method == 'POST':
+        product = Product.objects.get(id=pk)
+        user_count = int(request.POST.get('pr_amount'))
+        if 1 <= user_count <= product.product_count:
+            Cart.objects.create(user_id=request.user.id,
+                                user_product=product,
+                                user_pr_amount=user_count).save()
+            return redirect('/')
+        return redirect(f'/product/{pk}')
+
+
+# Отображение корзины
+def cart(request):
+    user_cart = Cart.objects.filter(user_id=request.user.id)
+    context = {'cart': user_cart}
+    return render(request, 'cart.html', context)
