@@ -36,14 +36,24 @@
     <div class="container px-4 py-4" id="featured-3">
         {% if cart|length > 0 %}
         <h2 class="pb-2 border-bottom">Ваша корзина</h2>
-        <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <div class="container">
             {% for item in cart %}
             <div class="feature col">
                 <a href="/product/{{ item.user_product.id }}"><img src="{{ item.user_product.product_photo.url }}" width="350" height="350" alt=""></a>
                 <h3 class="fs-2 text-body-emphasis">{{ item.user_product }}</h3>
                 <h2 class="fs-2 text-body-emphasis">Количество: {{ item.user_pr_amount }}</h2>
+                <form action="/del-from-cart/{{ item.user_product.id }}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger mb-2">Удалить из корзины</button>
+                </form>
             </div>
             {% endfor %}
+            <hr>
+            <h2 class="fs-2 text-body-emphasis">Итого: ${{ total }}</h2>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg">Оформить заказ</button>
+            </form>
         </div>
         {% else %}
          <div class="container" align="center">

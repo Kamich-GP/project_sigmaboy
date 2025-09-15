@@ -79,6 +79,16 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'e_shop',
+#         'HOST': 'localhost',
+#         'USER': 'postgres',
+#         'PORT': 5432,
+#         'PASSWORD': 'ilovenina334T'
+#     }
+# }
 
 
 # Password validation
