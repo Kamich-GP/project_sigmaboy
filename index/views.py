@@ -4,7 +4,10 @@ from .forms import RegForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django.views import View
+import telebot
 
+bot = telebot.TeleBot('TOKEN')
+group_id = "GROUP_ID"
 
 # Create your views here.
 # Главная страница
@@ -105,8 +108,36 @@ def add_to_cart(request, pk):
         return redirect(f'/product/{pk}')
 
 
+# Удаление товара из корзины
+def del_from_cart(request, pk):
+    Cart.objects.filter(user_product=Product.objects.get(id=pk)).delete()
+    return redirect('/cart')
+
+
 # Отображение корзины
 def cart(request):
     user_cart = Cart.objects.filter(user_id=request.user.id)
-    context = {'cart': user_cart}
+    totals = [round(t.user_product.product_price * t.user_pr_amount) for t in user_cart]
+    context = {
+        'cart': user_cart,
+        'total': round(sum(totals))
+    }
+
+    if request.method == 'POST':
+        text = (f'Новый заказ!\n'
+                f'Клиент: {User.objects.get(id=request.user.id).email}\n\n')
+
+        for i in user_cart:
+            product = Product.objects.get(id=i.user_product.id)
+            product.product_count = product.product_count - i.user_pr_amount
+            product.save(update_fields=['product_count'])
+
+            text += (f'Товар: {i.user_product}\n'
+                     f'Количество: {i.user_pr_amount}\n'
+                     f'--------------------------------\n')
+        text += f'Итого: ${round(sum(totals))}'
+        bot.send_message(group_id, text)
+        user_cart.delete()
+        return redirect('/')
+
     return render(request, 'cart.html', context)
